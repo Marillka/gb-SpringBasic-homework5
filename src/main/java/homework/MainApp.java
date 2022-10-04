@@ -21,7 +21,10 @@ public class MainApp {
 
 
             productDao.deleteById(2L);
+
             System.out.println(productDao.findAll());
+
+            productDao.changePrice(1L, 80);
 
 
             System.out.println(productDao.findById(1L));

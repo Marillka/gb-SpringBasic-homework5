@@ -12,4 +12,6 @@ public interface ProductDao {
 
     void saveOrUpdate(Product product);
 
+     void changePrice(Long id, Integer delta);
+
 }

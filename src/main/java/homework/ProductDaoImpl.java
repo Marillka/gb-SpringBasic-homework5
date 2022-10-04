@@ -35,10 +35,17 @@ public class ProductDaoImpl implements ProductDao {
     public void deleteById(Long id) {
         try (Session session = sessionFactoryUtils.getSession()) {
             session.beginTransaction();
-            Product product = session.get(Product.class, id);
+            // 1 вариант. Минус такого подхода в том, что здесь select. Второе - когда мы вытаскиваем из базы, вытаскивается не один экземпляр, а два, одним вы управляете, второй лежит в контексте. И получается  что мы тратим память.
+//            Product product = session.get(Product.class, id);
+//            session.delete(product);
 
-            session.delete(product);
+            // 2 вариант через создание запроса
+            session.createQuery("delete from Product where id = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
             session.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -50,4 +57,19 @@ public class ProductDaoImpl implements ProductDao {
             session.getTransaction().commit();
         }
     }
+
+    public void changePrice(Long id, Integer delta) {
+        try (Session session = sessionFactoryUtils.getSession()) {
+            session.beginTransaction();
+            Product product = session.get(Product.class, id);
+            session.createQuery("update Product p set price = :delta where p.id = :id")
+                    .setParameter("id", id)
+                    .setParameter("delta", delta + product.getPrice())
+                    .executeUpdate();
+            session.getTransaction().commit();
+        }
+    }
+
+
+
 }
